@@ -23,7 +23,13 @@ export class PaymentsController {
 
       res.status(201).json(result)
     } catch (error) {
-      res.status(500).json({ error: 'Error interno al generar el QR' })
+      console.error('ERROR EN GENERATE QR:', error)
+      res
+        .status(500)
+        .json({
+          error: 'Error interno al generar el QR',
+          details: String(error),
+        })
     }
   }
 
@@ -47,6 +53,7 @@ export class PaymentsController {
 
       res.status(200).json(transaction)
     } catch (error) {
+      console.error('ERROR EN GET STATUS:', error)
       res.status(500).json({ error: 'Error interno al consultar el estado' })
     }
   }

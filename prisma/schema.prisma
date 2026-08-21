@@ -1,0 +1,30 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  EXPIRED
+  FAILED
+}
+
+model Transaction {
+  id          String        @id @default(uuid())
+  aliasRef    String        @unique @map("alias_ref") @db.VarChar(50)
+  amount      Decimal       @db.Decimal(10, 2)
+  currency    String        @default("BOB") @db.VarChar(3)
+  qrData      String        @map("qr_data") @db.Text
+  status      PaymentStatus @default(PENDING)
+  expiresAt   DateTime      @map("expires_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@index([aliasRef])
+  @@index([status, expiresAt])
+  @@map("transactions")
+}

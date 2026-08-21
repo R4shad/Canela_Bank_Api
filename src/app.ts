@@ -2,6 +2,7 @@ import express, { Application } from 'express'
 import cors from 'cors'
 import swaggerUi from 'swagger-ui-express'
 import { swaggerDocument } from './config/swagger'
+import paymentsRouter from './modules/payments/payments.routes'
 
 export const createApp = (): Application => {
   const app = express()
@@ -15,6 +16,8 @@ export const createApp = (): Application => {
   app.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() })
   })
+
+  app.use('/api/v1/payments', paymentsRouter)
 
   return app
 }

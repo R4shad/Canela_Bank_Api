@@ -38,5 +38,58 @@ export const swaggerDocument: OpenAPIV3.Document = {
         },
       },
     },
+    '/api/v1/payments/qr': {
+      post: {
+        summary: 'Generar un nuevo código QR de pago',
+        tags: ['Payments'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['amount'],
+                properties: {
+                  amount: { type: 'number', example: 50.5 },
+                  currency: { type: 'string', example: 'BOB' },
+                  expirationMinutes: { type: 'number', example: 15 },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '201': {
+            description: 'QR generado exitosamente',
+          },
+          '400': {
+            description: 'Datos inválidos',
+          },
+        },
+      },
+    },
+    '/api/v1/payments/{aliasRef}': {
+      get: {
+        summary: 'Consultar estado de una transacción por aliasRef',
+        tags: ['Payments'],
+        parameters: [
+          {
+            name: 'aliasRef',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+            example: 'CANELA-1234-abcd',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Estado de la transacción',
+          },
+          '404': {
+            description: 'Transacción no encontrada',
+          },
+        },
+      },
+    },
   },
 }

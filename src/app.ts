@@ -5,6 +5,7 @@ import { swaggerDocument } from './config/swagger'
 import paymentsRouter from './modules/payments/payments.routes'
 import webhooksRouter from './modules/webhooks/webhooks.routes'
 import mockBnbRouter from './modules/mock-bnb/mock-bnb.routes'
+import demoRouter from './modules/demo/demo.routes'
 
 export const createApp = (): Application => {
   const app = express()
@@ -22,6 +23,7 @@ export const createApp = (): Application => {
   app.use('/api/v1/payments', paymentsRouter)
   app.use('/api/v1/webhooks', webhooksRouter)
   app.use('/api/v1/mock/bnb', mockBnbRouter)
+  app.use('/demo', demoRouter)
 
   return app
 }

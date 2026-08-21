@@ -32,7 +32,7 @@ export class DemoController {
           <body>
             <div class="card">
               <h1>Pago No Encontrado</h1>
-              <p>El código QR o enlace ingresado no existe en nuestro sistema.</p>
+              <p>El código QR o enlace ingresado no existe en Canela Bank.</p>
             </div>
           </body>
           </html>
@@ -41,7 +41,6 @@ export class DemoController {
       }
 
       const isPending = transaction.status === 'PENDING'
-      const isPaid = transaction.status === 'PAID'
       const isExpired = new Date() > transaction.expiresAt && isPending
 
       const html = `
@@ -50,7 +49,7 @@ export class DemoController {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Simulador de Pago BNB - Canela Bank</title>
+          <title>Banca Móvil - Canela Bank</title>
           <style>
             * { box-sizing: border-box; margin: 0; padding: 0; }
             body {
@@ -73,18 +72,18 @@ export class DemoController {
               border: 1px solid #334155;
             }
             .app-header {
-              background: linear-gradient(135deg, #0284c7, #0369a1);
+              background: linear-gradient(135deg, #d97706, #b45309);
               padding: 1.5rem;
               text-align: center;
             }
             .app-header h1 {
-              font-size: 1.25rem;
+              font-size: 1.3rem;
               font-weight: 700;
               letter-spacing: 0.5px;
             }
             .app-header p {
               font-size: 0.85rem;
-              opacity: 0.9;
+              opacity: 0.95;
               margin-top: 4px;
             }
             .app-body {
@@ -107,7 +106,7 @@ export class DemoController {
             .amount-val {
               font-size: 2.2rem;
               font-weight: 800;
-              color: #38bdf8;
+              color: #f59e0b;
               margin: 0.5rem 0;
             }
             .ref-info {
@@ -141,11 +140,11 @@ export class DemoController {
               margin-bottom: 0.75rem;
             }
             .btn-pay {
-              background: #0284c7;
+              background: #d97706;
               color: #ffffff;
             }
             .btn-pay:hover {
-              background: #0369a1;
+              background: #b45309;
             }
             .btn-pay:disabled {
               background: #475569;
@@ -172,8 +171,8 @@ export class DemoController {
         <body>
           <div class="app-container">
             <div class="app-header">
-              <h1>Banca Móvil BNB</h1>
-              <p>Simulador de Transferencia Simple QR</p>
+              <h1>Canela Bank Móvil</h1>
+              <p>Transferencia QR Canela Pay</p>
             </div>
             <div class="app-body">
               <div class="amount-card">
@@ -218,7 +217,7 @@ export class DemoController {
               if (btnFail) btnFail.disabled = true;
 
               try {
-                const response = await fetch('/api/v1/mock/bnb/simulate-payment', {
+                const response = await fetch('/api/v1/mock/canela/simulate-payment', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
@@ -235,7 +234,7 @@ export class DemoController {
                   if (btnFail) btnFail.disabled = false;
                 }
               } catch (err) {
-                alert('Error de conexión con el simulador');
+                alert('Error de conexión con el simulador de Canela Bank');
                 if (btnPay) btnPay.disabled = false;
                 if (btnFail) btnFail.disabled = false;
               }

@@ -3,9 +3,9 @@ import { OpenAPIV3 } from 'openapi-types'
 export const swaggerDocument: OpenAPIV3.Document = {
   openapi: '3.0.0',
   info: {
-    title: 'Canela Bank API - Simple QR Simulator',
+    title: 'Canela Bank API - Payment Gateway Simulator',
     version: '1.0.0',
-    description: 'API simuladora de pasarela de pagos Simple QR BNB',
+    description: 'API simuladora de pasarela de pagos Canela Pay QR',
   },
   servers: [
     {
@@ -20,27 +20,13 @@ export const swaggerDocument: OpenAPIV3.Document = {
         responses: {
           '200': {
             description: 'Servicio activo',
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    status: { type: 'string', example: 'ok' },
-                    timestamp: {
-                      type: 'string',
-                      example: '2026-08-20T23:45:00.000Z',
-                    },
-                  },
-                },
-              },
-            },
           },
         },
       },
     },
     '/api/v1/payments/qr': {
       post: {
-        summary: 'Generar un nuevo código QR de pago',
+        summary: 'Generar un nuevo código QR de pago Canela Pay',
         tags: ['Payments'],
         requestBody: {
           required: true,
@@ -83,14 +69,14 @@ export const swaggerDocument: OpenAPIV3.Document = {
         },
       },
     },
-    '/api/v1/webhooks/bnb': {
+    '/api/v1/webhooks/canela-pay': {
       post: {
         summary:
-          'Webhook oficial receptor de confirmaciones BNB (requiere x-bnb-signature)',
+          'Webhook oficial receptor de confirmaciones Canela Pay (requiere x-canela-signature)',
         tags: ['Webhooks'],
         parameters: [
           {
-            name: 'x-bnb-signature',
+            name: 'x-canela-signature',
             in: 'header',
             required: true,
             schema: { type: 'string' },
@@ -117,7 +103,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
                   },
                   transactionNumber: {
                     type: 'string',
-                    example: 'BNB-TX-998811',
+                    example: 'CANELA-TX-998811',
                   },
                 },
               },
@@ -130,10 +116,10 @@ export const swaggerDocument: OpenAPIV3.Document = {
         },
       },
     },
-    '/api/v1/mock/bnb/simulate-payment': {
+    '/api/v1/mock/canela/simulate-payment': {
       post: {
-        summary: 'Simulador bancario BNB para disparar el pago de un QR',
-        tags: ['Mock BNB Engine'],
+        summary: 'Simulador de Canela Bank para disparar el pago de un QR',
+        tags: ['Mock Canela Engine'],
         requestBody: {
           required: true,
           content: {

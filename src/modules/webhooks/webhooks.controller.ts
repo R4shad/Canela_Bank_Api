@@ -5,14 +5,14 @@ import { CryptoUtil } from '../../shared/utils/crypto'
 const webhooksService = new WebhooksService()
 
 export class WebhooksController {
-  async handleBnbWebhook(req: Request, res: Response): Promise<void> {
+  async handleCanelaWebhook(req: Request, res: Response): Promise<void> {
     try {
-      const signature = req.headers['x-bnb-signature'] as string
+      const signature = req.headers['x-canela-signature'] as string
       const secret =
         process.env.WEBHOOK_SECRET || 'canela_bank_super_secret_key_12345'
 
       if (!signature) {
-        res.status(401).json({ error: 'Firma x-bnb-signature faltante' })
+        res.status(401).json({ error: 'Firma x-canela-signature faltante' })
         return
       }
 
@@ -27,7 +27,7 @@ export class WebhooksController {
         return
       }
 
-      const result = await webhooksService.processBnbNotification(req.body)
+      const result = await webhooksService.processCanelaNotification(req.body)
 
       if (!result.success && result.reason === 'TRANSACTION_NOT_FOUND') {
         res.status(404).json({ error: 'Transacción no encontrada' })

@@ -1,6 +1,6 @@
 import { prisma } from '../../shared/database/prisma'
 
-export interface WebhookPaymentPayload {
+export interface CanelaPaymentPayload {
   aliasRef: string
   status: 'COMPLETED' | 'FAILED'
   paymentDate: string
@@ -8,7 +8,7 @@ export interface WebhookPaymentPayload {
 }
 
 export class WebhooksService {
-  async processBnbNotification(payload: WebhookPaymentPayload) {
+  async processCanelaNotification(payload: CanelaPaymentPayload) {
     const { aliasRef, status } = payload
 
     const transaction = await prisma.transaction.findUnique({

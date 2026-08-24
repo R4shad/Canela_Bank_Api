@@ -22,6 +22,23 @@ export class WebhooksService {
       return { success: false, reason: 'TRANSACTION_NOT_FOUND' }
     }
 
+    if (
+      transaction.status === 'EXPIRED' ||
+      (transaction.status === 'PENDING' && new Date() > transaction.expiresAt)
+    ) {
+      if (transaction.status !== 'EXPIRED') {
+        await prisma.transaction.update({
+          where: { aliasRef },
+          data: { status: 'EXPIRED' },
+        })
+      }
+      return {
+        success: false,
+        reason: 'TRANSACTION_EXPIRED',
+        status: 'EXPIRED',
+      }
+    }
+
     if (transaction.status !== 'PENDING') {
       return {
         success: true,

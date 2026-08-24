@@ -39,6 +39,10 @@ export const swaggerDocument: OpenAPIV3.Document = {
                   amount: { type: 'number', example: 50.5 },
                   currency: { type: 'string', example: 'BOB' },
                   expirationMinutes: { type: 'number', example: 15 },
+                  callbackUrl: {
+                    type: 'string',
+                    example: 'https://webhook.site/tu-id-de-prueba',
+                  },
                 },
               },
             },

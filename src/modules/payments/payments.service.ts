@@ -6,6 +6,7 @@ export interface GenerateQrInput {
   amount: number
   currency?: string
   expirationMinutes?: number
+  callbackUrl?: string
 }
 
 export class PaymentsService {
@@ -32,6 +33,7 @@ export class PaymentsService {
         currency,
         qrData: qrBase64,
         status: 'PENDING',
+        callbackUrl: input.callbackUrl || null,
         expiresAt,
       },
     })
@@ -44,6 +46,7 @@ export class PaymentsService {
       status: transaction.status,
       qrImage: transaction.qrData,
       paymentUrl,
+      callbackUrl: transaction.callbackUrl,
       expiresAt: transaction.expiresAt,
     }
   }
@@ -63,6 +66,7 @@ export class PaymentsService {
       amount: Number(transaction.amount),
       currency: transaction.currency,
       status: transaction.status,
+      callbackUrl: transaction.callbackUrl,
       expiresAt: transaction.expiresAt,
       createdAt: transaction.createdAt,
       updatedAt: transaction.updatedAt,

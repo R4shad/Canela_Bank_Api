@@ -1,4 +1,5 @@
 import { prisma } from '../../shared/database/prisma'
+import { MerchantNotifierService } from './merchant-notifier.service'
 
 export interface CanelaPaymentPayload {
   aliasRef: string
@@ -7,9 +8,11 @@ export interface CanelaPaymentPayload {
   transactionNumber: string
 }
 
+const merchantNotifier = new MerchantNotifierService()
+
 export class WebhooksService {
   async processCanelaNotification(payload: CanelaPaymentPayload) {
-    const { aliasRef, status } = payload
+    const { aliasRef, status, transactionNumber, paymentDate } = payload
 
     const transaction = await prisma.transaction.findUnique({
       where: { aliasRef },
@@ -36,6 +39,23 @@ export class WebhooksService {
       },
     })
 
-    return { success: true, status: updated.status }
+    let merchantNotified = false
+
+    if (updated.callbackUrl) {
+      merchantNotified = await merchantNotifier.notifyMerchant(
+        updated.callbackUrl,
+        {
+          event: nextStatus === 'PAID' ? 'PAYMENT_COMPLETED' : 'PAYMENT_FAILED',
+          aliasRef: updated.aliasRef,
+          amount: Number(updated.amount),
+          currency: updated.currency,
+          status: updated.status,
+          transactionNumber: transactionNumber || `CANELA-${Date.now()}`,
+          paymentDate: paymentDate || new Date().toISOString(),
+        },
+      )
+    }
+
+    return { success: true, status: updated.status, merchantNotified }
   }
 }

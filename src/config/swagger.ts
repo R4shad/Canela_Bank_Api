@@ -5,7 +5,8 @@ export const swaggerDocument: OpenAPIV3.Document = {
   info: {
     title: 'Canela Bank API - Payment Gateway Simulator',
     version: '1.0.0',
-    description: 'API simuladora de pasarela de pagos Canela Pay QR',
+    description:
+      'API simuladora de pasarela de pagos Canela Pay QR con autenticación de comercio',
   },
   servers: [
     {
@@ -13,6 +14,22 @@ export const swaggerDocument: OpenAPIV3.Document = {
       description: 'Servidor Local',
     },
   ],
+  components: {
+    securitySchemes: {
+      ApiKeyAuth: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'x-api-key',
+        description:
+          'Ingresa tu API Key de comercio (ej: canela_test_key_live_99887766)',
+      },
+      BearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        description: 'Ingresa tu API Key como Bearer token',
+      },
+    },
+  },
   paths: {
     '/health': {
       get: {
@@ -26,8 +43,10 @@ export const swaggerDocument: OpenAPIV3.Document = {
     },
     '/api/v1/payments/qr': {
       post: {
-        summary: 'Generar un nuevo código QR de pago Canela Pay',
+        summary:
+          'Generar un nuevo código QR de pago Canela Pay (Requiere Auth)',
         tags: ['Payments'],
+        security: [{ ApiKeyAuth: [] }, { BearerAuth: [] }],
         requestBody: {
           required: true,
           content: {
@@ -55,14 +74,17 @@ export const swaggerDocument: OpenAPIV3.Document = {
         },
         responses: {
           '201': { description: 'QR generado exitosamente' },
+          '401': { description: 'No autorizado / API Key inválida' },
           '400': { description: 'Datos inválidos' },
         },
       },
     },
     '/api/v1/payments/{aliasRef}': {
       get: {
-        summary: 'Consultar estado de una transacción por aliasRef',
+        summary:
+          'Consultar estado de una transacción por aliasRef (Requiere Auth)',
         tags: ['Payments'],
+        security: [{ ApiKeyAuth: [] }, { BearerAuth: [] }],
         parameters: [
           {
             name: 'aliasRef',
@@ -74,6 +96,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
         ],
         responses: {
           '200': { description: 'Estado de la transacción' },
+          '401': { description: 'No autorizado' },
           '404': { description: 'Transacción no encontrada' },
         },
       },

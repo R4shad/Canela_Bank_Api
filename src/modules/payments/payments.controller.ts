@@ -1,10 +1,11 @@
-import { Request, Response } from 'express'
+import { Response } from 'express'
 import { PaymentsService } from './payments.service'
+import { AuthenticatedRequest } from '../../shared/middlewares/auth.middleware'
 
 const paymentsService = new PaymentsService()
 
 export class PaymentsController {
-  async generate(req: Request, res: Response): Promise<void> {
+  async generate(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const { amount, currency, gloss, expirationMinutes, callbackUrl } =
         req.body
@@ -22,6 +23,7 @@ export class PaymentsController {
         gloss,
         expirationMinutes,
         callbackUrl,
+        merchantId: req.merchant?.id,
       })
 
       res.status(201).json(result)
@@ -36,7 +38,7 @@ export class PaymentsController {
     }
   }
 
-  async getStatus(req: Request, res: Response): Promise<void> {
+  async getStatus(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const { aliasRef } = req.params
 

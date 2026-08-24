@@ -8,6 +8,7 @@ export interface GenerateQrInput {
   gloss?: string
   expirationMinutes?: number
   callbackUrl?: string
+  merchantId?: string
 }
 
 export class PaymentsService {
@@ -31,6 +32,7 @@ export class PaymentsService {
     const transaction = await prisma.transaction.create({
       data: {
         aliasRef,
+        merchantId: input.merchantId || null,
         amount: input.amount,
         currency,
         gloss,
@@ -44,6 +46,7 @@ export class PaymentsService {
     return {
       id: transaction.id,
       aliasRef: transaction.aliasRef,
+      merchantId: transaction.merchantId,
       amount: Number(transaction.amount),
       currency: transaction.currency,
       gloss: transaction.gloss,
@@ -58,6 +61,14 @@ export class PaymentsService {
   async getPaymentStatus(aliasRef: string) {
     const transaction = await prisma.transaction.findUnique({
       where: { aliasRef },
+      include: {
+        merchant: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     })
 
     if (!transaction) {
@@ -67,6 +78,7 @@ export class PaymentsService {
     return {
       id: transaction.id,
       aliasRef: transaction.aliasRef,
+      merchant: transaction.merchant,
       amount: Number(transaction.amount),
       currency: transaction.currency,
       gloss: transaction.gloss,

@@ -59,7 +59,8 @@ export class WebhooksService {
     let merchantNotified = false
 
     if (updated.callbackUrl) {
-      merchantNotified = await merchantNotifier.notifyMerchant(
+      merchantNotified = await merchantNotifier.dispatchInitialWebhook(
+        updated.id,
         updated.callbackUrl,
         {
           event: nextStatus === 'PAID' ? 'PAYMENT_COMPLETED' : 'PAYMENT_FAILED',

@@ -7,19 +7,39 @@ datasource db {
 }
 
 model Transaction {
-  id          String            @id @default(uuid())
-  aliasRef    String            @unique
-  amount      Decimal           @db.Decimal(10, 2)
-  currency    String            @default("BOB")
-  gloss       String?           @db.VarChar(255)
-  status      TransactionStatus @default(PENDING)
-  qrData      String            @db.Text
-  callbackUrl String?           @db.VarChar(500)
-  expiresAt   DateTime
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id              String            @id @default(uuid())
+  aliasRef        String            @unique
+  amount          Decimal           @db.Decimal(10, 2)
+  currency        String            @default("BOB")
+  gloss           String?           @db.VarChar(255)
+  status          TransactionStatus @default(PENDING)
+  qrData          String            @db.Text
+  callbackUrl     String?           @db.VarChar(500)
+  expiresAt       DateTime
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  webhookDeliveries WebhookDelivery[]
 
   @@map("transactions")
+}
+
+model WebhookDelivery {
+  id            String         @id @default(uuid())
+  transactionId String
+  transaction   Transaction    @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  url           String         @db.VarChar(500)
+  payload       Json
+  attempt       Int            @default(1)
+  maxAttempts   Int            @default(4)
+  statusCode    Int?
+  responseBody  String?        @db.Text
+  status        DeliveryStatus @default(PENDING)
+  nextRetryAt   DateTime?
+  lastError     String?        @db.Text
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("webhook_deliveries")
 }
 
 enum TransactionStatus {
@@ -27,4 +47,10 @@ enum TransactionStatus {
   PAID
   FAILED
   EXPIRED
+}
+
+enum DeliveryStatus {
+  PENDING
+  SUCCESS
+  FAILED
 }

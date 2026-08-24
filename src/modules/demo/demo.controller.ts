@@ -95,7 +95,7 @@ export class DemoController {
               border-radius: 16px;
               padding: 1.25rem;
               text-align: center;
-              margin-bottom: 1.5rem;
+              margin-bottom: 1.25rem;
             }
             .amount-label {
               font-size: 0.8rem;
@@ -109,18 +109,29 @@ export class DemoController {
               color: #f59e0b;
               margin: 0.5rem 0;
             }
-            .ref-info {
-              font-size: 0.75rem;
-              color: #64748b;
-              word-break: break-all;
+            .detail-box {
+              background: #0f172a;
+              border: 1px solid #334155;
+              border-radius: 12px;
+              padding: 0.9rem;
+              margin-bottom: 1.25rem;
+              font-size: 0.85rem;
             }
+            .detail-row {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 6px;
+            }
+            .detail-row:last-child { margin-bottom: 0; }
+            .detail-label { color: #94a3b8; font-weight: 500; }
+            .detail-value { color: #f8fafc; font-weight: 600; text-align: right; }
             .status-badge {
               display: inline-block;
               padding: 6px 14px;
               border-radius: 9999px;
               font-size: 0.85rem;
               font-weight: 600;
-              margin-bottom: 1.5rem;
+              margin-bottom: 1.25rem;
               width: 100%;
               text-align: center;
             }
@@ -178,7 +189,17 @@ export class DemoController {
               <div class="amount-card">
                 <div class="amount-label">Monto a Transferir</div>
                 <div class="amount-val">${Number(transaction.amount).toFixed(2)} ${transaction.currency}</div>
-                <div class="ref-info">Ref: ${transaction.aliasRef}</div>
+              </div>
+
+              <div class="detail-box">
+                <div class="detail-row">
+                  <span class="detail-label">Concepto / Glosa:</span>
+                  <span class="detail-value">${transaction.gloss || 'Pago Simple QR'}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Referencia:</span>
+                  <span class="detail-value" style="font-size: 0.75rem; word-break: break-all;">${transaction.aliasRef}</span>
+                </div>
               </div>
 
               <div id="statusBadge" class="status-badge status-${isExpired ? 'FAILED' : transaction.status}">

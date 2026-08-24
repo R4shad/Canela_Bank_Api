@@ -6,7 +6,8 @@ const paymentsService = new PaymentsService()
 export class PaymentsController {
   async generate(req: Request, res: Response): Promise<void> {
     try {
-      const { amount, currency, expirationMinutes, callbackUrl } = req.body
+      const { amount, currency, gloss, expirationMinutes, callbackUrl } =
+        req.body
 
       if (!amount || typeof amount !== 'number' || amount <= 0) {
         res
@@ -18,13 +19,20 @@ export class PaymentsController {
       const result = await paymentsService.generatePaymentQr({
         amount,
         currency,
+        gloss,
         expirationMinutes,
         callbackUrl,
       })
 
       res.status(201).json(result)
-    } catch {
-      res.status(500).json({ error: 'Error interno al generar el QR' })
+    } catch (error) {
+      console.error('ERROR EN GENERATE QR:', error)
+      res
+        .status(500)
+        .json({
+          error: 'Error interno al generar el QR',
+          details: String(error),
+        })
     }
   }
 
@@ -47,7 +55,8 @@ export class PaymentsController {
       }
 
       res.status(200).json(transaction)
-    } catch {
+    } catch (error) {
+      console.error('ERROR EN GET STATUS:', error)
       res.status(500).json({ error: 'Error interno al consultar el estado' })
     }
   }

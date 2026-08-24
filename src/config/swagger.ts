@@ -38,10 +38,15 @@ export const swaggerDocument: OpenAPIV3.Document = {
                 properties: {
                   amount: { type: 'number', example: 50.5 },
                   currency: { type: 'string', example: 'BOB' },
+                  gloss: {
+                    type: 'string',
+                    example: 'Compra de teclado mecánico - Orden #1024',
+                  },
                   expirationMinutes: { type: 'number', example: 15 },
                   callbackUrl: {
                     type: 'string',
-                    example: 'https://webhook.site/tu-id-de-prueba',
+                    example:
+                      'https://webhook.site/80b73e4b-4bee-48f9-a29e-9bb26cf26e61',
                   },
                 },
               },
@@ -103,7 +108,7 @@ export const swaggerDocument: OpenAPIV3.Document = {
                   },
                   paymentDate: {
                     type: 'string',
-                    example: '2026-08-21T10:00:00.000Z',
+                    example: '2026-08-24T23:30:00.000Z',
                   },
                   transactionNumber: {
                     type: 'string',

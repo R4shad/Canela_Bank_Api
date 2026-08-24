@@ -11,6 +11,7 @@ model Transaction {
   aliasRef    String            @unique
   amount      Decimal           @db.Decimal(10, 2)
   currency    String            @default("BOB")
+  gloss       String?           @db.VarChar(255)
   status      TransactionStatus @default(PENDING)
   qrData      String            @db.Text
   callbackUrl String?           @db.VarChar(500)

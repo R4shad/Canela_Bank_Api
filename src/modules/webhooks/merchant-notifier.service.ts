@@ -5,6 +5,7 @@ export interface MerchantNotificationPayload {
   aliasRef: string
   amount: number
   currency: string
+  gloss?: string | null
   status: string
   transactionNumber: string
   paymentDate: string

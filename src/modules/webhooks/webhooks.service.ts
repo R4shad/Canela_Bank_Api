@@ -49,6 +49,7 @@ export class WebhooksService {
           aliasRef: updated.aliasRef,
           amount: Number(updated.amount),
           currency: updated.currency,
+          gloss: updated.gloss,
           status: updated.status,
           transactionNumber: transactionNumber || `CANELA-${Date.now()}`,
           paymentDate: paymentDate || new Date().toISOString(),

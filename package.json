@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "rimraf dist && tsc",
-    "start": "node dist/server.js"
+    "build": "npx prisma generate && rimraf dist && tsc",
+    "start": "node dist/src/server.js"
   },
   "repository": {
     "type": "git",

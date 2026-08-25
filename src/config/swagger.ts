@@ -1,5 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types'
 
+const serverUrl = process.env.BASE_URL || 'http://localhost:3000'
 export const swaggerDocument: OpenAPIV3.Document = {
   openapi: '3.0.0',
   info: {
@@ -10,8 +11,11 @@ export const swaggerDocument: OpenAPIV3.Document = {
   },
   servers: [
     {
-      url: 'http://localhost:3000',
-      description: 'Servidor Local',
+      url: serverUrl,
+      description:
+        process.env.NODE_ENV === 'production'
+          ? 'Servidor de Producción (Render)'
+          : 'Servidor Local',
     },
   ],
   components: {

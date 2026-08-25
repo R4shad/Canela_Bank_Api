@@ -6,8 +6,17 @@ export const swaggerDocument: OpenAPIV3.Document = {
   info: {
     title: 'Canela Bank API - Payment Gateway Simulator',
     version: '1.0.0',
-    description:
-      'API simuladora de pasarela de pagos Canela Pay QR con autenticación de comercio',
+    description: `
+                  API Sandbox para simulación de pagos con QR en Bolivia bajo el estándar Simple QR.
+
+                  ---
+                  ### 🔑 Credenciales Sandbox (Test Credentials)
+                  Para realizar pruebas en los endpoints protegidos, utiliza la siguiente API Key en el botón **Authorize**:
+                  * **API Key:** \`canela_test_key_live_99887766\`
+                  * **Header soportado:** \`x-api-key: canela_test_key_live_99887766\` o \`Authorization: Bearer canela_test_key_live_99887766\`
+                  * **Comercio Demo:** Comercio Demo Central
+                  ---
+                  `,
   },
   servers: [
     {

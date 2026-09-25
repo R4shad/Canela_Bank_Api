@@ -1,6 +1,7 @@
 import QRCode from 'qrcode'
 import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '../../shared/database/prisma'
+import { createCanvas, loadImage } from 'canvas'
 
 export interface GenerateQrInput {
   amount: number
@@ -23,11 +24,47 @@ export class PaymentsService {
     const baseUrl = process.env.BASE_URL || 'http://localhost:3000'
     const paymentUrl = `${baseUrl}/demo/pay/${aliasRef}`
 
-    const qrBase64 = await QRCode.toDataURL(paymentUrl, {
+    let merchantName = 'Sin especificar'
+    let destinationAccount = 'Sin especificar'
+
+    if (input.merchantId) {
+      const merchant = await prisma.merchant.findUnique({
+        where: { id: input.merchantId },
+      })
+      if (merchant) {
+        merchantName = merchant.name
+        destinationAccount = merchant.accountNumber || '0000000000'
+      }
+    }
+
+    const rawQrBase64 = await QRCode.toDataURL(paymentUrl, {
       errorCorrectionLevel: 'M',
       margin: 2,
       width: 300,
     })
+
+    const canvas = createCanvas(400, 520)
+    const ctx = canvas.getContext('2d')
+
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, 400, 520)
+
+    const qrImage = await loadImage(rawQrBase64)
+    ctx.drawImage(qrImage, 50, 10, 300, 300)
+
+    ctx.fillStyle = '#000000'
+    ctx.textAlign = 'center'
+
+    ctx.font = 'bold 16px sans-serif'
+    ctx.fillText(`Monto: ${currency} ${input.amount.toFixed(2)}`, 200, 340)
+
+    ctx.font = '14px sans-serif'
+    ctx.fillText(`Pagar a: ${merchantName}`, 200, 380)
+    ctx.fillText(`Cuenta destino: ${destinationAccount}`, 200, 410)
+    ctx.fillText(`Concepto: ${gloss.substring(0, 35)}`, 200, 440)
+    ctx.fillText(`Válido hasta: ${expiresAt.toLocaleString('es-BO')}`, 200, 470)
+
+    const finalQrBase64 = canvas.toDataURL('image/png')
 
     const transaction = await prisma.transaction.create({
       data: {
@@ -36,7 +73,7 @@ export class PaymentsService {
         amount: input.amount,
         currency,
         gloss,
-        qrData: qrBase64,
+        qrData: finalQrBase64,
         status: 'PENDING',
         callbackUrl: input.callbackUrl || null,
         expiresAt,
@@ -66,6 +103,7 @@ export class PaymentsService {
           select: {
             id: true,
             name: true,
+            accountNumber: true,
           },
         },
       },
@@ -87,6 +125,9 @@ export class PaymentsService {
       expiresAt: transaction.expiresAt,
       createdAt: transaction.createdAt,
       updatedAt: transaction.updatedAt,
+      payerName: transaction.payerName,
+      payerAccount: transaction.payerAccount,
+      receiptNumber: transaction.receiptNumber,
     }
   }
 }

@@ -7,14 +7,15 @@ datasource db {
 }
 
 model Merchant {
-  id           String        @id @default(uuid())
-  name         String        @db.VarChar(100)
-  apiKey       String        @unique @db.VarChar(64)
-  secretKey    String        @db.VarChar(128)
-  isActive     Boolean       @default(true)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  transactions Transaction[]
+  id            String        @id @default(uuid())
+  name          String        @db.VarChar(100)
+  accountNumber String?       @db.VarChar(50)
+  apiKey        String        @unique @db.VarChar(64)
+  secretKey     String        @db.VarChar(128)
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  transactions  Transaction[]
 
   @@map("merchants")
 }
@@ -30,6 +31,9 @@ model Transaction {
   status            TransactionStatus @default(PENDING)
   qrData            String            @db.Text
   callbackUrl       String?           @db.VarChar(500)
+  payerName         String?           @db.VarChar(100)
+  payerAccount      String?           @db.VarChar(50)
+  receiptNumber     String?           @db.VarChar(50)
   expiresAt         DateTime
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt

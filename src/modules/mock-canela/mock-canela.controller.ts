@@ -1,18 +1,30 @@
 import { Request, Response } from 'express'
 import { CryptoUtil } from '../../shared/utils/crypto'
 import { WebhooksService } from '../webhooks/webhooks.service'
+import { prisma } from '../../shared/database/prisma'
 
 const webhooksService = new WebhooksService()
 
 export class MockCanelaController {
   async simulatePayment(req: Request, res: Response): Promise<void> {
     try {
-      const { aliasRef, status } = req.body
+      const { aliasRef, status, payerName } = req.body
 
       if (!aliasRef || typeof aliasRef !== 'string') {
         res.status(400).json({ error: 'El aliasRef es requerido' })
         return
       }
+
+      await prisma.transaction.update({
+        where: { aliasRef },
+        data: {
+          status: status === 'FAILED' ? 'FAILED' : 'PAID',
+          payerName: payerName || 'MARIA ELENA BERNABE',
+          payerAccount: '350****437',
+          receiptNumber: `98845*1202BNB*${Math.floor(Math.random() * 9000) + 1000}`,
+          updatedAt: new Date(),
+        },
+      })
 
       const payload = {
         aliasRef,

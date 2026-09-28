@@ -10,6 +10,7 @@ export interface GenerateQrInput {
   expirationMinutes?: number
   callbackUrl?: string
   merchantId?: string
+  recipientName?: string
 }
 
 export class PaymentsService {
@@ -24,7 +25,7 @@ export class PaymentsService {
     const baseUrl = process.env.BASE_URL || 'http://localhost:3000'
     const paymentUrl = `${baseUrl}/demo/pay/${aliasRef}`
 
-    let merchantName = 'Sin especificar'
+    let merchantName = input.recipientName || 'Sin especificar'
     let destinationAccount = 'Sin especificar'
 
     if (input.merchantId) {
@@ -32,8 +33,10 @@ export class PaymentsService {
         where: { id: input.merchantId },
       })
       if (merchant) {
-        merchantName = merchant.name
-        destinationAccount = merchant.accountNumber || '0000000000'
+        if (!input.recipientName) {
+          merchantName = merchant.name
+        }
+        destinationAccount = merchant.accountNumber || '3187030000001'
       }
     }
 
@@ -73,6 +76,7 @@ export class PaymentsService {
         amount: input.amount,
         currency,
         gloss,
+        customRecipient: merchantName,
         qrData: finalQrBase64,
         status: 'PENDING',
         callbackUrl: input.callbackUrl || null,
@@ -109,9 +113,7 @@ export class PaymentsService {
       },
     })
 
-    if (!transaction) {
-      return null
-    }
+    if (!transaction) return null
 
     return {
       id: transaction.id,
@@ -128,6 +130,7 @@ export class PaymentsService {
       payerName: transaction.payerName,
       payerAccount: transaction.payerAccount,
       receiptNumber: transaction.receiptNumber,
+      customRecipient: transaction.customRecipient,
     }
   }
 }

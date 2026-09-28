@@ -31,7 +31,8 @@ model Transaction {
   status            TransactionStatus @default(PENDING)
   qrData            String            @db.Text
   callbackUrl       String?           @db.VarChar(500)
-  payerName         String?           @db.VarChar(100)
+  customRecipient   String?           @db.VarChar(100) // Nuevo: Nombre del destinatario personalizado
+  payerName         String?           @db.VarChar(100) // Nuevo: Nombre del originante
   payerAccount      String?           @db.VarChar(50)
   receiptNumber     String?           @db.VarChar(50)
   expiresAt         DateTime

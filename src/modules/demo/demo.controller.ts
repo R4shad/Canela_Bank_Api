@@ -17,7 +17,7 @@ export class DemoController {
       })
 
       if (!transaction) {
-        res.status(404).send(`<h1>Pago No Encontrado</h1>`)
+        res.status(404).send('<h1>Pago No Encontrado</h1>')
         return
       }
 
@@ -26,13 +26,18 @@ export class DemoController {
       const isPaid = transaction.status === 'PAID'
 
       const dateStr = transaction.updatedAt.toLocaleDateString('es-BO')
-      const timeStr = transaction.updatedAt.toLocaleTimeString('es-BO')
-      const mockPayerName = 'JUAN PEREZ SIMULADOR'
-      const mockPayerAccount = '350****123'
-      const mockReceipt = `98845*1202BNB*${Math.floor(Math.random() * 9000) + 1000}`
-      const merchantName = transaction.merchant?.name || 'Comercio Desconocido'
+      const timeStr = transaction.updatedAt.toLocaleTimeString('es-BO', {
+        hour12: false,
+      })
+
+      const merchantName =
+        transaction.customRecipient ||
+        transaction.merchant?.name ||
+        'Comercio Destino'
       const merchantAccount =
-        transaction.merchant?.accountNumber || 'Caja de Ahorro 350****999'
+        transaction.merchant?.accountNumber || '3187030000001'
+      const payerNameDisplay = transaction.payerName || 'MARIA ELENA BERNABE'
+      const receiptNum = transaction.receiptNumber || '3P94901049'
 
       const html = `
         <!DOCTYPE html>
@@ -46,62 +51,67 @@ export class DemoController {
             * { box-sizing: border-box; margin: 0; padding: 0; }
             body { font-family: system-ui, -apple-system, sans-serif; background-color: #0b1329; color: #f1f5f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1.25rem; }
             .app-container { background: #1e293b; width: 100%; max-width: 420px; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); border: 1px solid #334155; }
-            .app-header { background: linear-gradient(135deg, #d97706, #b45309); padding: 1.5rem; text-align: center; }
-            .app-header h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: 0.5px; }
-            .app-header p { font-size: 0.85rem; opacity: 0.95; margin-top: 4px; }
+            .app-header { background: linear-gradient(135deg, #16a34a, #15803d); padding: 1.5rem; text-align: center; }
+            .app-header h1 { font-size: 1.3rem; font-weight: 700; color: #ffffff; }
+            .app-header p { font-size: 0.85rem; color: #dcfce7; margin-top: 4px; }
             .app-body { padding: 1.75rem; }
             .amount-card { background: #0f172a; border: 1px solid #334155; border-radius: 16px; padding: 1.25rem; text-align: center; margin-bottom: 1.25rem; display: ${isPaid ? 'none' : 'block'}; }
             .amount-label { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-            .amount-val { font-size: 2.2rem; font-weight: 800; color: #f59e0b; margin: 0.5rem 0; }
+            .amount-val { font-size: 2.2rem; font-weight: 800; color: #22c55e; margin: 0.5rem 0; }
+            .form-group { margin-bottom: 1rem; display: ${isPaid ? 'none' : 'block'}; text-align: left; }
+            .form-group label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.4rem; }
+            .form-control { width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #ffffff; font-size: 0.95rem; }
             .detail-box { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 0.9rem; margin-bottom: 1.25rem; font-size: 0.85rem; display: ${isPaid ? 'none' : 'block'}; }
             .detail-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
-            .detail-row:last-child { margin-bottom: 0; }
             .detail-label { color: #94a3b8; font-weight: 500; }
             .detail-value { color: #f8fafc; font-weight: 600; text-align: right; }
             .btn { width: 100%; padding: 1rem; border-radius: 12px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; display: block; margin-bottom: 0.75rem; }
-            .btn-pay { background: #d97706; color: #ffffff; }
-            .btn-pay:hover { background: #b45309; }
+            .btn-pay { background: #16a34a; color: #ffffff; }
+            .btn-pay:hover { background: #15803d; }
             .btn-download { background: #059669; color: #ffffff; }
-            .btn-download:hover { background: #047857; }
             .btn-fail { background: transparent; color: #94a3b8; border: 1px solid #475569; }
-            .btn-fail:hover { background: rgba(239, 68, 68, 0.1); color: #f87171; border-color: #ef4444; }
-            #receipt { background: #ffffff; color: #166534; padding: 2rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center; display: ${isPaid ? 'block' : 'none'}; }
-            #receipt h2 { color: #16a34a; font-size: 2rem; font-weight: 900; margin-bottom: 0.5rem; }
-            #receipt h3 { font-size: 1.1rem; font-weight: 500; margin-bottom: 1.5rem; }
-            .receipt-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.75rem; text-align: left; }
-            .r-label { font-weight: 500; color: #22c55e; width: 45%; }
-            .r-value { color: #374151; width: 55%; font-weight: 600; word-break: break-all; }
+            #receipt { background: #ffffff; color: #166534; padding: 1.75rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center; display: ${isPaid ? 'block' : 'none'}; }
+            #receipt h2 { color: #16a34a; font-size: 1.8rem; font-weight: 900; margin-bottom: 0.2rem; }
+            #receipt h3 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: #15803d; }
+            .receipt-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.6rem; text-align: left; border-bottom: 1px dashed #e5e7eb; padding-bottom: 4px; }
+            .r-label { font-weight: 600; color: #16a34a; width: 45%; }
+            .r-value { color: #374151; width: 55%; font-weight: 600; text-align: right; word-break: break-all; }
           </style>
         </head>
         <body>
           <div class="app-container">
             <div class="app-header">
-              <h1>Canela Bank Móvil</h1>
-              <p>Transferencia QR Canela Pay</p>
+              <h1>BNB Móvil</h1>
+              <p>Comprobante Electrónico - Transferencia QR</p>
             </div>
             <div class="app-body">
               
               <div class="amount-card">
-                <div class="amount-label">Monto a Transferir</div>
-                <div class="amount-val">${Number(transaction.amount).toFixed(2)} ${transaction.currency}</div>
+                <div class="amount-label">Monto a Pagar</div>
+                <div class="amount-val">Bs. ${Number(transaction.amount).toFixed(2)}</div>
+              </div>
+
+              <div class="form-group">
+                <label for="payerNameInput">Nombre del Originante (Pagador):</label>
+                <input type="text" id="payerNameInput" class="form-control" value="MARIA ELENA BERNABE" placeholder="Ej. Juan Pérez" />
               </div>
 
               <div class="detail-box">
                 <div class="detail-row">
-                  <span class="detail-label">Concepto / Glosa:</span>
-                  <span class="detail-value">${transaction.gloss || 'Pago Simple QR'}</span>
+                  <span class="detail-label">Concepto:</span>
+                  <span class="detail-value">${transaction.gloss || 'Transferencia'}</span>
                 </div>
                 <div class="detail-row">
-                  <span class="detail-label">Referencia:</span>
-                  <span class="detail-value" style="font-size: 0.75rem; word-break: break-all;">${transaction.aliasRef}</span>
+                  <span class="detail-label">Destinatario:</span>
+                  <span class="detail-value">${merchantName}</span>
                 </div>
               </div>
 
               <div id="receipt">
-                <h2>CANELA</h2>
+                <h2>BNB</h2>
                 <h3>Comprobante Electrónico</h3>
-                <div style="margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: bold; color: #22c55e;">
-                  Comprobante de transferencia a terceros simple.
+                <div style="margin-bottom: 1rem; font-size: 0.8rem; font-weight: bold; color: #16a34a;">
+                  Transferencia interbancaria
                 </div>
                 
                 <div class="receipt-row">
@@ -109,7 +119,7 @@ export class DemoController {
                   <span class="r-value">${transaction.gloss || 'Sin referencia'}</span>
                 </div>
                 <div class="receipt-row">
-                  <span class="r-label">Fecha de la Transacción:</span>
+                  <span class="r-label">Fecha de la transacción:</span>
                   <span class="r-value">${dateStr}</span>
                 </div>
                 <div class="receipt-row">
@@ -117,12 +127,12 @@ export class DemoController {
                   <span class="r-value">${timeStr}</span>
                 </div>
                 <div class="receipt-row">
-                  <span class="r-label">Se debitó de su Caja de Ahorro:</span>
-                  <span class="r-value">${mockPayerAccount}</span>
+                  <span class="r-label">Nombre del originante:</span>
+                  <span class="r-value">${payerNameDisplay}</span>
                 </div>
                 <div class="receipt-row">
-                  <span class="r-label">Se debitó la suma de BS::</span>
-                  <span class="r-value">${Number(transaction.amount).toFixed(2)}</span>
+                  <span class="r-label">Se debitó de su caja de ahorro:</span>
+                  <span class="r-value">350****437</span>
                 </div>
                 <div class="receipt-row">
                   <span class="r-label">Nombre del destinatario:</span>
@@ -133,8 +143,12 @@ export class DemoController {
                   <span class="r-value">${merchantAccount}</span>
                 </div>
                 <div class="receipt-row">
-                  <span class="r-label">Comprobante:</span>
-                  <span class="r-value">${mockReceipt}</span>
+                  <span class="r-label">La suma de Bs.:</span>
+                  <span class="r-value">${Number(transaction.amount).toFixed(2)}</span>
+                </div>
+                <div class="receipt-row">
+                  <span class="r-label">Bancarización:</span>
+                  <span class="r-value">${receiptNum}</span>
                 </div>
               </div>
 
@@ -159,6 +173,9 @@ export class DemoController {
             async function processPayment(status) {
               const btnPay = document.getElementById('btnPay');
               const btnFail = document.getElementById('btnFail');
+              const payerNameInput = document.getElementById('payerNameInput');
+              const payerNameVal = payerNameInput ? payerNameInput.value : 'MARIA ELENA BERNABE';
+
               if (btnPay) btnPay.disabled = true;
               if (btnFail) btnFail.disabled = true;
 
@@ -168,7 +185,8 @@ export class DemoController {
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
                     aliasRef: '${transaction.aliasRef}',
-                    status: status
+                    status: status,
+                    payerName: payerNameVal
                   })
                 });
 
@@ -190,7 +208,7 @@ export class DemoController {
               const receiptElement = document.getElementById('receipt');
               html2canvas(receiptElement, { scale: 2 }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'Comprobante_Canela_${transaction.aliasRef.substring(0, 10)}.png';
+                link.download = 'Comprobante_BNB_${transaction.aliasRef.substring(0, 10)}.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
               });

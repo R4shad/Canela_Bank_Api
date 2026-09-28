@@ -25,8 +25,11 @@ export class DemoController {
       const isExpired = new Date() > transaction.expiresAt && isPending
       const isPaid = transaction.status === 'PAID'
 
-      const dateStr = transaction.updatedAt.toLocaleDateString('es-BO')
+      const dateStr = transaction.updatedAt.toLocaleDateString('es-BO', {
+        timeZone: 'America/La_Paz',
+      })
       const timeStr = transaction.updatedAt.toLocaleTimeString('es-BO', {
+        timeZone: 'America/La_Paz',
         hour12: false,
       })
 
@@ -36,7 +39,7 @@ export class DemoController {
         'Comercio Destino'
       const merchantAccount =
         transaction.merchant?.accountNumber || '3187030000001'
-      const payerNameDisplay = transaction.payerName || 'MARIA ELENA BERNABE'
+      const payerNameDisplay = transaction.payerName || 'ANÓNIMO'
       const receiptNum = transaction.receiptNumber || '3P94901049'
 
       const html = `
@@ -61,6 +64,8 @@ export class DemoController {
             .form-group { margin-bottom: 1rem; display: ${isPaid ? 'none' : 'block'}; text-align: left; }
             .form-group label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.4rem; }
             .form-control { width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #ffffff; font-size: 0.95rem; }
+            .form-control:invalid { border-color: #ef4444; }
+            .error-msg { color: #f87171; font-size: 0.75rem; margin-top: 4px; display: none; }
             .detail-box { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 0.9rem; margin-bottom: 1.25rem; font-size: 0.85rem; display: ${isPaid ? 'none' : 'block'}; }
             .detail-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
             .detail-label { color: #94a3b8; font-weight: 500; }
@@ -92,8 +97,9 @@ export class DemoController {
               </div>
 
               <div class="form-group">
-                <label for="payerNameInput">Nombre del Originante (Pagador):</label>
-                <input type="text" id="payerNameInput" class="form-control" value="MARIA ELENA BERNABE" placeholder="Ej. Juan Pérez" />
+                <label for="payerNameInput">Nombre del Originante (Pagador) *:</label>
+                <input type="text" id="payerNameInput" class="form-control" value="" placeholder="Ingrese su nombre completo" required />
+                <div id="errorMsg" class="error-msg">Debe ingresar el nombre del originante para continuar.</div>
               </div>
 
               <div class="detail-box">
@@ -171,11 +177,22 @@ export class DemoController {
 
           <script>
             async function processPayment(status) {
+              const payerNameInput = document.getElementById('payerNameInput');
+              const errorMsg = document.getElementById('errorMsg');
+              const payerNameVal = payerNameInput ? payerNameInput.value.trim() : '';
+
+              if (!payerNameVal && status === 'COMPLETED') {
+                payerNameInput.style.borderColor = '#ef4444';
+                errorMsg.style.display = 'block';
+                payerNameInput.focus();
+                return;
+              }
+
+              errorMsg.style.display = 'none';
+              payerNameInput.style.borderColor = '#334155';
+
               const btnPay = document.getElementById('btnPay');
               const btnFail = document.getElementById('btnFail');
-              const payerNameInput = document.getElementById('payerNameInput');
-              const payerNameVal = payerNameInput ? payerNameInput.value : 'MARIA ELENA BERNABE';
-
               if (btnPay) btnPay.disabled = true;
               if (btnFail) btnFail.disabled = true;
 

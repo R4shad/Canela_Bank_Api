@@ -65,7 +65,10 @@ export class PaymentsService {
     ctx.fillText(`Pagar a: ${merchantName}`, 200, 380)
     ctx.fillText(`Cuenta destino: ${destinationAccount}`, 200, 410)
     ctx.fillText(`Concepto: ${gloss.substring(0, 35)}`, 200, 440)
-    ctx.fillText(`Válido hasta: ${expiresAt.toLocaleString('es-BO')}`, 200, 470)
+    ctx.fillText(
+      `Válido hasta: ${expiresAt.toLocaleString('es-BO', { timeZone: 'America/La_Paz' })}`,
+      200, 470
+    )
 
     const finalQrBase64 = canvas.toDataURL('image/png')
 

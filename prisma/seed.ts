@@ -11,7 +11,7 @@ async function main() {
   if (!existing) {
     await prisma.merchant.create({
       data: {
-        name: 'Comercio Demo Central',
+        name: 'TikTok Live Sales',
         apiKey: 'canela_test_key_live_99887766',
         secretKey: crypto.randomBytes(32).toString('hex'),
         isActive: true,
